@@ -283,18 +283,32 @@ Game.create = async function()
             Game.spectatorMode = {
                 enabled: true,
                 followingPlayer: null,
-                zoomLevel: 0.3, // Zoom inicial para ver o mapa inteiro
-                panSpeed: 10,
-                zoomSpeed: 0.1,
-                minZoom: 0.1,
+                zoomLevel: 0.3, // Zoom inicial (será ajustado pelo minZoom dinâmico)
+                panSpeed: 8,
+                zoomSpeed: 0.02, // Mais suave
+                minZoom: 0.1,    // Será recalculado abaixo
                 maxZoom: 2.0
             };
             
-            // Define zoom inicial para visualizar mapa completo
+            // Calcula minZoom dinâmico para evitar bordas fora do mundo
+            // minZoom = max(viewport/world) para garantir que não apareça espaço além do mapa
+            const viewW = this.cameras.main.width;
+            const viewH = this.cameras.main.height;
+            const worldW = w;
+            const worldH = h;
+            const dynamicMinZoom = Math.max(viewW / worldW, viewH / worldH);
+            Game.spectatorMode.minZoom = dynamicMinZoom;
+            // Começa ligeiramente acima do mínimo para permitir pan
+            const startZoom = Game.spectatorMode.minZoom + 0.02;
+            Game.spectatorMode.zoomLevel = Math.max(Game.spectatorMode.zoomLevel, startZoom);
+
+            // Define zoom inicial respeitando o minZoom calculado
             this.cameras.main.setZoom(Game.spectatorMode.zoomLevel);
             
             // Centraliza câmera no mapa
             this.cameras.main.centerOn(w / 2, h / 2);
+            // Garante que não há follow no modo espectador
+            this.cameras.main.stopFollow();
             
             console.log('✅ Modo espectador ativado - Controles: Scroll = Zoom, Setas/WASD = Movimentar');
         } else {
@@ -443,7 +457,10 @@ Game.create = async function()
         }
         Game.collisionBodies = [];
 
-        createComponets(player);
+        // Não seguir o "player" no modo espectador para permitir pan livre
+        if (!Game.spectatorMode.enabled) {
+            createComponets(player);
+        }
 }
     
 Game.update = function(signal, direction)
@@ -1011,13 +1028,17 @@ function setCursors(){
     {
         test:Phaser.Input.Keyboard.KeyCodes.ENTER,
 
-        up:Phaser.Input.Keyboard.KeyCodes.W,
-    
-        down:Phaser.Input.Keyboard.KeyCodes.S,
-    
-        left:Phaser.Input.Keyboard.KeyCodes.A,
-    
-        right:Phaser.Input.Keyboard.KeyCodes.D,
+        // Setas
+        up:Phaser.Input.Keyboard.KeyCodes.UP,
+        down:Phaser.Input.Keyboard.KeyCodes.DOWN,
+        left:Phaser.Input.Keyboard.KeyCodes.LEFT,
+        right:Phaser.Input.Keyboard.KeyCodes.RIGHT,
+
+        // WASD (atalhos duplicados)
+        w:Phaser.Input.Keyboard.KeyCodes.W,
+        a:Phaser.Input.Keyboard.KeyCodes.A,
+        s:Phaser.Input.Keyboard.KeyCodes.S,
+        d:Phaser.Input.Keyboard.KeyCodes.D,
     
         run:Phaser.Input.Keyboard.KeyCodes.SHIFT,
 
@@ -1028,10 +1049,6 @@ function setCursors(){
         hado:Phaser.Input.Keyboard.KeyCodes.H,
         
         // 🎭 Teclas para modo espectador
-        w:Phaser.Input.Keyboard.KeyCodes.W,
-        a:Phaser.Input.Keyboard.KeyCodes.A,
-        s:Phaser.Input.Keyboard.KeyCodes.S,
-        d:Phaser.Input.Keyboard.KeyCodes.D,
         q:Phaser.Input.Keyboard.KeyCodes.Q, // Zoom out
         e:Phaser.Input.Keyboard.KeyCodes.E  // Zoom in
     });
@@ -1880,26 +1897,26 @@ Game.updateSpectatorControls = function() {
         
         if (!isTyping) {
             // Movimento com setas ou WASD
-            if (cursors.left.isDown || (cursors.a && cursors.a.isDown)) {
+            if ((cursors.left && cursors.left.isDown) || (cursors.a && cursors.a.isDown)) {
                 camera.scrollX -= spec.panSpeed / camera.zoom;
             }
-            if (cursors.right.isDown || (cursors.d && cursors.d.isDown)) {
+            if ((cursors.right && cursors.right.isDown) || (cursors.d && cursors.d.isDown)) {
                 camera.scrollX += spec.panSpeed / camera.zoom;
             }
-            if (cursors.up.isDown || (cursors.w && cursors.w.isDown)) {
+            if ((cursors.up && cursors.up.isDown) || (cursors.w && cursors.w.isDown)) {
                 camera.scrollY -= spec.panSpeed / camera.zoom;
             }
-            if (cursors.down.isDown || (cursors.s && cursors.s.isDown)) {
+            if ((cursors.down && cursors.down.isDown) || (cursors.s && cursors.s.isDown)) {
                 camera.scrollY += spec.panSpeed / camera.zoom;
             }
             
             // Zoom com Q e E
             if (cursors.q && cursors.q.isDown) {
-                spec.zoomLevel = Math.max(spec.minZoom, spec.zoomLevel - spec.zoomSpeed * 0.1);
+                spec.zoomLevel = Math.max(spec.minZoom, spec.zoomLevel - spec.zoomSpeed);
                 camera.setZoom(spec.zoomLevel);
             }
             if (cursors.e && cursors.e.isDown) {
-                spec.zoomLevel = Math.min(spec.maxZoom, spec.zoomLevel + spec.zoomSpeed * 0.1);
+                spec.zoomLevel = Math.min(spec.maxZoom, spec.zoomLevel + spec.zoomSpeed);
                 camera.setZoom(spec.zoomLevel);
             }
         }
@@ -1910,7 +1927,9 @@ Game.updateSpectatorControls = function() {
         const pointer = this.input.activePointer;
         
         if (pointer.deltaY !== 0) {
-            const delta = pointer.deltaY > 0 ? -spec.zoomSpeed : spec.zoomSpeed;
+            // Ajuste suave com base no deltaY (scroll pode variar por dispositivo)
+            const step = spec.zoomSpeed *  (Math.abs(pointer.deltaY) > 1 ? 1 : 0.5);
+            const delta = pointer.deltaY > 0 ? -step : step;
             spec.zoomLevel = Phaser.Math.Clamp(
                 spec.zoomLevel + delta,
                 spec.minZoom,
@@ -1927,6 +1946,26 @@ Game.updateSpectatorControls = function() {
             Game.playerNames[id].x = p.sprite.x;
             Game.playerNames[id].y = p.sprite.y - 40;
         }
+    }
+
+    // Garante que a câmera não passe fora dos limites do mundo quando em câmera livre
+    if (spec.followingPlayer === null) {
+        const cam = camera;
+        const halfW = cam.width * 0.5 / cam.zoom;
+        const halfH = cam.height * 0.5 / cam.zoom;
+        const minCenterX = halfW;
+        const maxCenterX = w - halfW;
+        const minCenterY = halfH;
+        const maxCenterY = h - halfH;
+
+        // Calcula o centro atual
+        const currentCenterX = cam.scrollX + halfW;
+        const currentCenterY = cam.scrollY + halfH;
+        const clampedCenterX = Phaser.Math.Clamp(currentCenterX, minCenterX, maxCenterX);
+        const clampedCenterY = Phaser.Math.Clamp(currentCenterY, minCenterY, maxCenterY);
+        // Ajusta scroll com base no centro desejado
+        cam.scrollX = clampedCenterX - halfW;
+        cam.scrollY = clampedCenterY - halfH;
     }
 }
 

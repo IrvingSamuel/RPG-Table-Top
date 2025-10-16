@@ -1925,10 +1925,20 @@ function initSpectatorMode() {
     
     console.log('🎭 Inicializando painel de controle do espectador');
     
-    // Mostra o painel
+    // Mostra a action bar (botão de toggle)
+    const actionBar = document.getElementById('action-bar');
+    if (actionBar) {
+        actionBar.style.display = 'flex';
+    }
+    
+    // Verifica estado salvo do painel
+    const savedState = localStorage.getItem('spectator_panel_visible');
+    const shouldShow = savedState === null ? true : savedState === 'true';
+    
+    // Aplica estado inicial do painel
     const panel = document.getElementById('spectator-panel');
     if (panel) {
-        panel.style.display = 'block';
+        panel.style.display = shouldShow ? 'block' : 'none';
     }
     
     // Atualiza lista de jogadores a cada 2 segundos
@@ -1937,6 +1947,22 @@ function initSpectatorMode() {
     
     // Atualiza display de zoom a cada frame
     setInterval(updateZoomDisplay, 100);
+}
+
+// 🔧 Toggle do painel do espectador
+function toggleSpectatorPanel() {
+    if (!isMaster) return;
+    
+    const panel = document.getElementById('spectator-panel');
+    if (!panel) return;
+    
+    const isVisible = panel.style.display !== 'none';
+    const newState = !isVisible;
+    
+    panel.style.display = newState ? 'block' : 'none';
+    localStorage.setItem('spectator_panel_visible', newState ? 'true' : 'false');
+    
+    console.log(`🎭 Painel do espectador ${newState ? 'exibido' : 'ocultado'}`);
 }
 
 function updatePlayerList() {
