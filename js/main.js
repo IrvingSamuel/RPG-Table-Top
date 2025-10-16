@@ -323,16 +323,25 @@ let dw;
 let dh;
 var zoom = 2;
 var spriteMe = '';
+var isMaster = false; // Flag para modo mestre/espectador
 // var sprites = ['joaquim', 'isaac', 'peko', 'hyoma', 'master', 'sapo', 'fake', 'warrior', 'mage', 'ranger'];
 var sprites = ['fake', 'warrior', 'mage', 'ranger'];
 var aScene = 'hospital';
 var person = window.location.href;
-person = person.split("?p=");
-if(person[1]){
-  spriteMe = person[1];
-}
-else{
-  spriteMe = 'warrior'
+
+// Verifica se é modo mestre
+if(person.includes('?master') || person.includes('&master')){
+    isMaster = true;
+    spriteMe = 'spectator';
+    console.log('🎭 Modo Mestre/Espectador ativado');
+} else {
+    person = person.split("?p=");
+    if(person[1]){
+      spriteMe = person[1];
+    }
+    else{
+      spriteMe = 'warrior'
+    }
 }
 
 
@@ -1910,3 +1919,102 @@ if (document.readyState === 'loading') {
 } else {
     setupChatFocusControl();
 }
+// 🎭 MODO ESPECTADOR: Funções de controle
+function initSpectatorMode() {
+    if (!isMaster) return;
+    
+    console.log('🎭 Inicializando painel de controle do espectador');
+    
+    // Mostra o painel
+    const panel = document.getElementById('spectator-panel');
+    if (panel) {
+        panel.style.display = 'block';
+    }
+    
+    // Atualiza lista de jogadores a cada 2 segundos
+    setInterval(updatePlayerList, 2000);
+    updatePlayerList();
+    
+    // Atualiza display de zoom a cada frame
+    setInterval(updateZoomDisplay, 100);
+}
+
+function updatePlayerList() {
+    if (!isMaster || typeof Game === 'undefined' || !Game.getPlayerList) return;
+    
+    const select = document.getElementById('playerSelect');
+    if (!select) return;
+    
+    const players = Game.getPlayerList();
+    const currentValue = select.value;
+    
+    // Limpa e reconstrói a lista
+    select.innerHTML = '<option value="none">🎥 Câmera Livre</option>';
+    
+    players.forEach(player => {
+        const option = document.createElement('option');
+        option.value = player.id;
+        option.textContent = `👤 ${player.name} (${player.x}, ${player.y})`;
+        select.appendChild(option);
+    });
+    
+    // Restaura seleção anterior se ainda existe
+    if (currentValue !== 'none' && players.some(p => p.id == currentValue)) {
+        select.value = currentValue;
+    }
+}
+
+function updateZoomDisplay() {
+    if (!isMaster || typeof Game === 'undefined' || !Game.spectatorMode) return;
+    
+    const zoomSpan = document.getElementById('zoomLevel');
+    if (zoomSpan) {
+        const zoomPercent = Math.round(Game.spectatorMode.zoomLevel * 100);
+        zoomSpan.textContent = `${zoomPercent}%`;
+    }
+}
+
+function selectPlayerToFollow() {
+    const select = document.getElementById('playerSelect');
+    if (!select) return;
+    
+    const playerId = select.value;
+    
+    if (typeof Game !== 'undefined' && Game.followPlayer) {
+        Game.followPlayer(playerId === 'none' ? null : playerId);
+    }
+}
+
+function adjustSpectatorZoom(delta) {
+    if (!isMaster || typeof Game === 'undefined' || !Game.spectatorMode) return;
+    
+    Game.spectatorMode.zoomLevel = Math.max(
+        Game.spectatorMode.minZoom,
+        Math.min(Game.spectatorMode.maxZoom, Game.spectatorMode.zoomLevel + delta)
+    );
+    
+    if (window.gameInstance && window.gameInstance.scene.scenes[0]) {
+        window.gameInstance.scene.scenes[0].cameras.main.setZoom(Game.spectatorMode.zoomLevel);
+    }
+}
+
+function resetSpectatorZoom() {
+    if (!isMaster || typeof Game === 'undefined' || !Game.spectatorMode) return;
+    
+    Game.spectatorMode.zoomLevel = 0.3;
+    
+    if (window.gameInstance && window.gameInstance.scene.scenes[0]) {
+        const scene = window.gameInstance.scene.scenes[0];
+        scene.cameras.main.setZoom(0.3);
+        
+        // Se não está seguindo ninguém, centraliza no mapa
+        if (Game.spectatorMode.followingPlayer === null) {
+            scene.cameras.main.centerOn(w / 2, h / 2);
+        }
+    }
+}
+
+// Inicializa modo espectador quando o jogo estiver pronto
+window.addEventListener('load', function() {
+    setTimeout(initSpectatorMode, 1000);
+});

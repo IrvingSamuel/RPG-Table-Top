@@ -990,3 +990,144 @@ button:hover {
   }
 }
 
+/* 🎭 MODO ESPECTADOR: Estilos do Painel */
+.spectator-panel {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px;
+  min-width: 300px;
+  color: white;
+  font-family: "Lato", Arial, sans-serif;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.spectator-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.spectator-header i {
+  color: #ff6b6b;
+}
+
+.spectator-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-group label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.zoom-controls button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.zoom-controls button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.zoom-controls span {
+  font-weight: bold;
+  color: #4ecdc4;
+  min-width: 50px;
+  text-align: center;
+}
+
+#playerSelect {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+#playerSelect:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+#playerSelect option {
+  background: #1a1a1a;
+  color: white;
+}
+
+.info-group {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 4px 0;
+}
+
+.info-item i {
+  color: #4ecdc4;
+  width: 16px;
+}
+
+/* Responsivo para Espectador */
+@media (max-width: 768px) {
+  .spectator-panel {
+    top: 60px;
+    left: 10px;
+    right: 10px;
+    min-width: unset;
+    padding: 12px;
+  }
+  
+  .zoom-controls {
+    flex-wrap: wrap;
+  }
+}
+

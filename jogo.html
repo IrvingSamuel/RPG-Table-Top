@@ -120,6 +120,57 @@
             </div>
         </div>
     </div>
+
+    <!-- 🎭 Painel de Controles do Espectador -->
+    <div id="spectator-panel" class="spectator-panel" style="display: none;">
+        <div class="spectator-header">
+            <i class="fas fa-video"></i>
+            <span>Modo Espectador</span>
+        </div>
+        
+        <div class="spectator-controls">
+            <!-- Controles de Zoom -->
+            <div class="control-group">
+                <label><i class="fas fa-search"></i> Zoom</label>
+                <div class="zoom-controls">
+                    <button onclick="adjustSpectatorZoom(-0.1)" title="Zoom Out (Q)">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <span id="zoomLevel">30%</span>
+                    <button onclick="adjustSpectatorZoom(0.1)" title="Zoom In (E)">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button onclick="resetSpectatorZoom()" title="Resetar Zoom">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Seleção de Jogador -->
+            <div class="control-group">
+                <label><i class="fas fa-users"></i> Seguir Jogador</label>
+                <select id="playerSelect" onchange="selectPlayerToFollow()">
+                    <option value="none">Câmera Livre</option>
+                </select>
+            </div>
+            
+            <!-- Informações -->
+            <div class="control-group info-group">
+                <div class="info-item">
+                    <i class="fas fa-gamepad"></i>
+                    <span>WASD/Setas: Mover</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-mouse"></i>
+                    <span>Scroll: Zoom</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Q/E: Zoom Out/In</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"

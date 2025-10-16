@@ -275,6 +275,33 @@ Game.create = async function()
         this.cameras.main.height = ch;
         this.cameras.main.setBounds(0, 0, w , h);
         
+        // 🎭 MODO ESPECTADOR: Configuração inicial
+        if (typeof isMaster !== 'undefined' && isMaster) {
+            console.log('🎭 Configurando câmera para modo espectador');
+            
+            // Configurações de câmera livre
+            Game.spectatorMode = {
+                enabled: true,
+                followingPlayer: null,
+                zoomLevel: 0.3, // Zoom inicial para ver o mapa inteiro
+                panSpeed: 10,
+                zoomSpeed: 0.1,
+                minZoom: 0.1,
+                maxZoom: 2.0
+            };
+            
+            // Define zoom inicial para visualizar mapa completo
+            this.cameras.main.setZoom(Game.spectatorMode.zoomLevel);
+            
+            // Centraliza câmera no mapa
+            this.cameras.main.centerOn(w / 2, h / 2);
+            
+            console.log('✅ Modo espectador ativado - Controles: Scroll = Zoom, Setas/WASD = Movimentar');
+        } else {
+            Game.spectatorMode = {
+                enabled: false
+            };
+        }
 
         this.physics.world.setBounds(0, 0, w, h);
 
@@ -298,9 +325,25 @@ Game.create = async function()
         console.log(`🎮 Posicionando jogador em cena temporária: ${currentScene.nome} (será transferido depois)`);
         console.log(`📍 Posição inicial: x=${playerX}, y=${playerY}`);
         
-        player = this.physics.add.sprite(playerX, playerY, spriteMe);
-        hp1 = this.physics.add.sprite(playerX, playerY + 25, 'hitbox');
-        hc1 = this.physics.add.sprite(playerX, playerY + 5, 'hitboxP');
+        // 🎭 MODO ESPECTADOR: Não cria sprite de jogador
+        if (Game.spectatorMode.enabled) {
+            console.log('🎭 Modo espectador: Pulando criação de sprite do jogador');
+            
+            // Cria sprites invisíveis apenas para compatibilidade
+            player = this.physics.add.sprite(playerX, playerY, 'fake').setAlpha(0).setDepth(-1000);
+            hp1 = this.physics.add.sprite(playerX, playerY + 25, 'fake').setAlpha(0).setDepth(-1000);
+            hc1 = this.physics.add.sprite(playerX, playerY + 5, 'fake').setAlpha(0).setDepth(-1000);
+            
+            // Desabilita física para os sprites invisíveis
+            player.body.enable = false;
+            hp1.body.enable = false;
+            hc1.body.enable = false;
+        } else {
+            // Modo normal: cria sprites normalmente
+            player = this.physics.add.sprite(playerX, playerY, spriteMe);
+            hp1 = this.physics.add.sprite(playerX, playerY + 25, 'hitbox');
+            hc1 = this.physics.add.sprite(playerX, playerY + 5, 'hitboxP');
+        }
         
         // Cria animações básicas para evitar erros quando me ainda é -1
         Game.createDefaultAnimations.call(this);
@@ -405,6 +448,12 @@ Game.create = async function()
     
 Game.update = function(signal, direction)
     {       
+            // 🎭 MODO ESPECTADOR: Controles de câmera livre
+            if (Game.spectatorMode && Game.spectatorMode.enabled) {
+                Game.updateSpectatorControls.call(this);
+                return; // Não processa controles de jogador
+            }
+            
             // Verifica se cursors foi inicializado
             if (!cursors || !cursors.left) {
                 // Tenta inicializar se Cthis estiver disponível
@@ -976,7 +1025,15 @@ function setCursors(){
 
         dash:Phaser.Input.Keyboard.KeyCodes.K,
 
-        hado:Phaser.Input.Keyboard.KeyCodes.H
+        hado:Phaser.Input.Keyboard.KeyCodes.H,
+        
+        // 🎭 Teclas para modo espectador
+        w:Phaser.Input.Keyboard.KeyCodes.W,
+        a:Phaser.Input.Keyboard.KeyCodes.A,
+        s:Phaser.Input.Keyboard.KeyCodes.S,
+        d:Phaser.Input.Keyboard.KeyCodes.D,
+        q:Phaser.Input.Keyboard.KeyCodes.Q, // Zoom out
+        e:Phaser.Input.Keyboard.KeyCodes.E  // Zoom in
     });
 }
 
@@ -1802,6 +1859,112 @@ Game.pause = function(value){
         pause = false;
         movement = 'turn';
     }
+}
+
+// 🎭 MODO ESPECTADOR: Controles de câmera
+Game.updateSpectatorControls = function() {
+    const camera = this.cameras.main;
+    const spec = Game.spectatorMode;
+    
+    // Se está seguindo um jogador, atualiza posição da câmera
+    if (spec.followingPlayer !== null) {
+        const targetPlayer = Game.playerMap[spec.followingPlayer];
+        if (targetPlayer && targetPlayer.sprite) {
+            camera.centerOn(targetPlayer.sprite.x, targetPlayer.sprite.y);
+        }
+    }
+    
+    // Controles de teclado (só funcionam se não está seguindo jogador)
+    if (spec.followingPlayer === null && cursors) {
+        const isTyping = Game.isPlayerTyping();
+        
+        if (!isTyping) {
+            // Movimento com setas ou WASD
+            if (cursors.left.isDown || (cursors.a && cursors.a.isDown)) {
+                camera.scrollX -= spec.panSpeed / camera.zoom;
+            }
+            if (cursors.right.isDown || (cursors.d && cursors.d.isDown)) {
+                camera.scrollX += spec.panSpeed / camera.zoom;
+            }
+            if (cursors.up.isDown || (cursors.w && cursors.w.isDown)) {
+                camera.scrollY -= spec.panSpeed / camera.zoom;
+            }
+            if (cursors.down.isDown || (cursors.s && cursors.s.isDown)) {
+                camera.scrollY += spec.panSpeed / camera.zoom;
+            }
+            
+            // Zoom com Q e E
+            if (cursors.q && cursors.q.isDown) {
+                spec.zoomLevel = Math.max(spec.minZoom, spec.zoomLevel - spec.zoomSpeed * 0.1);
+                camera.setZoom(spec.zoomLevel);
+            }
+            if (cursors.e && cursors.e.isDown) {
+                spec.zoomLevel = Math.min(spec.maxZoom, spec.zoomLevel + spec.zoomSpeed * 0.1);
+                camera.setZoom(spec.zoomLevel);
+            }
+        }
+    }
+    
+    // Zoom com scroll do mouse
+    if (this.input && this.input.activePointer) {
+        const pointer = this.input.activePointer;
+        
+        if (pointer.deltaY !== 0) {
+            const delta = pointer.deltaY > 0 ? -spec.zoomSpeed : spec.zoomSpeed;
+            spec.zoomLevel = Phaser.Math.Clamp(
+                spec.zoomLevel + delta,
+                spec.minZoom,
+                spec.maxZoom
+            );
+            camera.setZoom(spec.zoomLevel);
+        }
+    }
+    
+    // Atualiza posições dos nomes (para todos os jogadores)
+    for (let id in Game.playerMap) {
+        const p = Game.playerMap[id];
+        if (p && p.sprite && Game.playerNames[id]) {
+            Game.playerNames[id].x = p.sprite.x;
+            Game.playerNames[id].y = p.sprite.y - 40;
+        }
+    }
+}
+
+// 🎭 MODO ESPECTADOR: Seguir jogador específico
+Game.followPlayer = function(playerId) {
+    if (Game.spectatorMode && Game.spectatorMode.enabled) {
+        if (playerId === null || playerId === 'none') {
+            Game.spectatorMode.followingPlayer = null;
+            console.log('🎭 Câmera livre ativada');
+            if (typeof addSystemMessage === 'function') {
+                addSystemMessage('📹 Câmera livre ativada');
+            }
+        } else if (Game.playerMap[playerId]) {
+            Game.spectatorMode.followingPlayer = playerId;
+            const playerName = Game.playerMap[playerId].client || `Jogador ${playerId}`;
+            console.log(`🎭 Seguindo jogador: ${playerName}`);
+            if (typeof addSystemMessage === 'function') {
+                addSystemMessage(`📹 Seguindo: ${playerName}`);
+            }
+        }
+    }
+}
+
+// 🎭 MODO ESPECTADOR: Obter lista de jogadores
+Game.getPlayerList = function() {
+    const players = [];
+    for (let id in Game.playerMap) {
+        const p = Game.playerMap[id];
+        if (p && p.sprite) {
+            players.push({
+                id: id,
+                name: p.client || `Jogador ${id}`,
+                x: Math.round(p.sprite.x),
+                y: Math.round(p.sprite.y)
+            });
+        }
+    }
+    return players;
 }
 
 Game.addNewPlayer = function (id, x, y,client,sprite){
