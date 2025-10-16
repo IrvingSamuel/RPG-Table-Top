@@ -1,5 +1,21 @@
 .idea
-.psd
 
 ./node_modules
 .DS_Store
+
+# Arquivos grandes
+*.psd
+*.tar.gz
+*.zip
+*.sql
+*.dump
+*.rar
+*.7z
+
+# Arquivos de banco de dados grandes
+*.20230224042923.tar.gz
+u742768766*.tar.gz
+u742768766*.sql
+
+# Diretórios de assets grandes (opcional - comente se precisar versionar)
+# assets/old/
