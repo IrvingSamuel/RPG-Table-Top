@@ -1403,7 +1403,9 @@ function createActionBar() {
     // Cria barra de ações
     const actionBar = document.createElement('div');
     actionBar.className = 'action-bar';
-    actionBar.innerHTML = `
+    
+    // Monta o HTML base com os dados
+    let actionBarHTML = `
         <div class="action-dropdown" id="diceDropdown">
             <button class="action-btn" id="diceDropdownBtn">
                 <span class="icon">🎲</span>
@@ -1422,6 +1424,18 @@ function createActionBar() {
         </div>
     `;
     
+    // 🎭 Adiciona botão do espectador se for modo mestre
+    if (isMaster) {
+        console.log('🎭 Adicionando botão do espectador à action-bar');
+        actionBarHTML += `
+            <button class="action-btn" id="toggleSpectatorBtn" onclick="toggleSpectatorPanel()" title="Mostrar/ocultar painel do espectador">
+                <i class="fas fa-eye"></i>
+                <span class="action-label">Espectador</span>
+            </button>
+        `;
+    }
+    
+    actionBar.innerHTML = actionBarHTML;
     document.body.appendChild(actionBar);
     console.log('✅ Barra de ações criada');
     
@@ -1924,12 +1938,6 @@ function initSpectatorMode() {
     if (!isMaster) return;
     
     console.log('🎭 Inicializando painel de controle do espectador');
-    
-    // Mostra a action bar (botão de toggle)
-    const actionBar = document.getElementById('action-bar');
-    if (actionBar) {
-        actionBar.style.display = 'flex';
-    }
     
     // Verifica estado salvo do painel
     const savedState = localStorage.getItem('spectator_panel_visible');
