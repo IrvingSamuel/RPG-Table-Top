@@ -1,0 +1,408 @@
+:root {
+    --primary-color: #e74c3c;
+    --secondary-color: #c0392b;
+    --dark-bg: #1a1a2e;
+    --darker-bg: #16213e;
+    --darkest-bg: #0f3460;
+    --light-text: #ecf0f1;
+    --gold: #f39c12;
+    --success: #27ae60;
+    --info: #3498db;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 50%, var(--darkest-bg) 100%);
+    color: var(--light-text);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(231, 76, 60, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(52, 152, 219, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container-fluid {
+    position: relative;
+    z-index: 1;
+}
+
+.master-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    padding: 30px 20px;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.master-header::before {
+    content: '🎲';
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.1;
+    right: -50px;
+    top: -50px;
+    transform: rotate(-15deg);
+}
+
+.master-header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin: 0;
+}
+
+.master-header .subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+
+.section-card {
+    background: rgba(26, 26, 46, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.section-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(231, 76, 60, 0.3);
+}
+
+.section-header i {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.map-card {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.2) 100%);
+    border: 2px solid rgba(52, 152, 219, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.map-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.map-card:hover::before {
+    left: 100%;
+}
+
+.map-card:hover {
+    transform: scale(1.02);
+    border-color: var(--info);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+}
+
+.map-card.active {
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.3) 0%, rgba(46, 204, 113, 0.3) 100%);
+    border-color: var(--success);
+    box-shadow: 0 0 20px rgba(39, 174, 96, 0.5);
+}
+
+.map-card .map-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.map-card .map-id {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+/* Botões de Horário (pequenos nos cards de mapa) */
+.time-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.time-btn {
+    flex: 1;
+    min-width: 90px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.time-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: var(--gold);
+}
+
+.time-btn.active {
+    background: linear-gradient(135deg, var(--gold), #d4af37);
+    border-color: var(--gold);
+    color: var(--dark-bg);
+    font-weight: bold;
+}
+
+.time-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* NOVOS: Botões de Horário GRANDES (área dedicada) */
+.time-buttons-large {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.time-btn-large {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.time-btn-large i.fa-sun,
+.time-btn-large i.fa-cloud-sun,
+.time-btn-large i.fa-moon {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+}
+
+.time-btn-large span {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.time-btn-large small {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.time-btn-large .fa-check-circle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--gold);
+    font-size: 1.2rem;
+}
+
+.time-btn-large:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+}
+
+.time-btn-large.active {
+    background: linear-gradient(135deg, var(--gold), #d4af37);
+    border-color: var(--gold);
+    color: var(--dark-bg);
+    font-weight: bold;
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+}
+
+.time-btn-large.active i.fa-sun,
+.time-btn-large.active i.fa-cloud-sun,
+.time-btn-large.active i.fa-moon {
+    color: var(--dark-bg);
+}
+
+.time-btn-large:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.current-scene-info {
+    padding: 15px;
+    background: rgba(231, 76, 60, 0.1);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+}
+
+.current-scene-info h5 {
+    margin: 0;
+    color: var(--gold);
+    font-size: 1.2rem;
+}
+
+.current-scene-info small {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.control-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px;
+    width: 100%;
+}
+
+.control-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn i {
+    font-size: 1.3rem;
+}
+
+.btn-pause {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.btn-play {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    font-size: 0.9rem;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.status-dot.online {
+    background: var(--success);
+    box-shadow: 0 0 10px var(--success);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.loading .spinner {
+    font-size: 3rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+@media (max-width: 768px) {
+    .master-header h1 {
+        font-size: 1.8rem;
+    }
+    .time-buttons {
+        flex-direction: column;
+    }
+    .time-btn {
+        width: 100%;
+    }
+    .control-btn {
+        justify-content: center;
+    }
+}

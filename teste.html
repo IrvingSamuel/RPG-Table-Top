@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+    <footer><div id=version></div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <script>
+
+      let w = 1920;
+      let h = 1080;
+      let midw = parseInt(w / 2);
+      let midh = parseInt(h / 2);
+      
+      var config = {
+          type: Phaser.AUTO,
+          width: 800,
+          height: 600,
+          scene: {
+              preload: preload,
+              create: create,
+              update: update
+          }
+      };
+
+      var image;
+
+      var game = new Phaser.Game(config);
+
+      function preload ()
+      {
+          this.load.image('logo', './assets/sprites/door.png');
+      }
+
+      function create ()
+      {
+          image = this.add.image(0, 300, 'logo').setScale(0.5);
+          image2 = this.add.image(800, 300, 'logo').setScale(0.5);
+          image2.flipX = !image2.flipX;
+          image.setOrigin(0,0.5);
+          image2.setOrigin(1,0.5);
+
+      }
+      var direction = false;
+      var movement = null;
+      var moved = false;
+      
+      function update ()
+      {   
+          if(image.rotation < -1.55 && image.rotation < 0 && direction == true){
+            direction = false;
+            movement = null;
+            moved = false;
+          }
+          else if(image.rotation > 1.55 && image.rotation > 0 && direction == false){
+            direction = true;
+            movement = null;
+            moved = false;
+          }
+          else if((image.rotation == 0) && moved == true){
+            image.rotation = 0
+            movement = null;
+            moved = false;
+          }
+          if(movement == null){
+            image.rotation = image.rotation;
+          }
+          else{
+            if(direction == false){
+              image.rotation += 0.05;
+              image2.rotation -= 0.05;
+              moved = true;
+            }
+            
+            else{
+              image.rotation -= 0.05;
+              image2.rotation += 0.05;
+              moved = true;
+            }
+          }
+          pointer = this.input.activePointer;
+          if (pointer.isDown == true && moved == false) { 
+            console.log(pointer.y);
+            if(pointer.y > 320 && pointer.y < 350 && image.rotation < 1.55){
+              direction = true;
+              movement = 1;
+              moved = false;
+            }
+            else if(pointer.y < 280  && pointer.y > 250 && image.rotation > -1.55){
+              direction = false;
+              movement = 1;
+              moved = false;
+            }
+            else if(pointer.y < 10 && image.rotation != 0){
+              direction = false;
+              movement = 1;
+              moved = true;
+            }
+            else if(pointer.y > 590 && image.rotation != 0){
+              direction = true;
+              movement = 1;
+              moved = true;
+            }
+            else{
+              movement = null;
+            }
+          }
+      }
+
+    </script>
+</body>
+</html>

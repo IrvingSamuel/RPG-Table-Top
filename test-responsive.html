@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Teste Responsivo - Road to Valhalla</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #C5DDEB;
+        }
+        
+        .test-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 10000;
+            max-width: 300px;
+        }
+        
+        .test-controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 10000;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        #gameContainer {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-controls">
+        <h4>Controles de Teste</h4>
+        <button onclick="simulateResize(800, 600)">800x600</button>
+        <button onclick="simulateResize(1024, 768)">1024x768</button>
+        <button onclick="simulateResize(1920, 1080)">1920x1080</button>
+        <button onclick="simulateResize(375, 667)">Mobile Portrait</button>
+        <button onclick="simulateResize(667, 375)">Mobile Landscape</button>
+        <button onclick="location.href='jogo.html'">Ir para o Jogo</button>
+    </div>
+    
+    <div class="test-info">
+        <h4>Informações da Tela</h4>
+        <div id="screenInfo"></div>
+        <div id="canvasInfo"></div>
+    </div>
+    
+    <div id="gameContainer">
+        <div>
+            <h2>Simulação do Canvas do Jogo</h2>
+            <p>Esta área representa onde o canvas do Phaser seria renderizado</p>
+            <p id="dimensions"></p>
+        </div>
+    </div>
+
+    <script>
+        function updateInfo() {
+            const screenInfo = document.getElementById('screenInfo');
+            const canvasInfo = document.getElementById('canvasInfo');
+            const dimensions = document.getElementById('dimensions');
+            
+            screenInfo.innerHTML = `
+                <strong>Window:</strong> ${window.innerWidth} x ${window.innerHeight}<br>
+                <strong>Screen:</strong> ${screen.width} x ${screen.height}<br>
+                <strong>Device Pixel Ratio:</strong> ${window.devicePixelRatio}
+            `;
+            
+            // Simula a lógica de dimensionamento do jogo
+            function detectMob() {
+                const toMatch = [
+                    /Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i
+                ];
+                return toMatch.some((toMatchItem) => navigator.userAgent.match(toMatchItem));
+            }
+            
+            const mobile = detectMob();
+            const availableWidth = window.innerWidth;
+            const availableHeight = window.innerHeight;
+            const uiMargin = mobile ? 10 : 5;
+            
+            let gameWidth = Math.max(320, availableWidth - uiMargin);
+            let gameHeight = Math.max(240, availableHeight - uiMargin);
+            
+            if (mobile) {
+                if (availableHeight > availableWidth) {
+                    gameWidth = availableWidth;
+                    gameHeight = availableHeight - 50;
+                } else {
+                    gameWidth = availableWidth - 50;
+                    gameHeight = availableHeight;
+                }
+            }
+            
+            canvasInfo.innerHTML = `
+                <strong>Dispositivo:</strong> ${mobile ? 'Mobile' : 'Desktop'}<br>
+                <strong>Canvas Calculado:</strong> ${Math.floor(gameWidth)} x ${Math.floor(gameHeight)}<br>
+                <strong>Orientação:</strong> ${availableHeight > availableWidth ? 'Retrato' : 'Paisagem'}
+            `;
+            
+            dimensions.textContent = `Canvas: ${Math.floor(gameWidth)} x ${Math.floor(gameHeight)}`;
+        }
+        
+        function simulateResize(width, height) {
+            // Esta função apenas demonstra como as dimensões mudariam
+            alert(`Simulando redimensionamento para: ${width}x${height}\nEm um navegador real, você redimensionaria a janela.`);
+        }
+        
+        // Atualiza informações quando a janela é redimensionada
+        window.addEventListener('resize', updateInfo);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateInfo, 500);
+        });
+        
+        // Atualização inicial
+        updateInfo();
+        
+        // Atualiza a cada segundo para capturar mudanças
+        setInterval(updateInfo, 1000);
+    </script>
+</body>
+</html>

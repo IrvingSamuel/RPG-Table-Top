@@ -1,0 +1,58 @@
+<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#fff;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#fff;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  
+  <!-- Glow effects -->
+  <circle cx="960" cy="540" r="400" fill="url(#glow)" opacity="0.3"/>
+  
+  <!-- Dice pattern -->
+  <g opacity="0.1" transform="translate(960, 540)">
+    <circle cx="-300" cy="-200" r="20" fill="#fff"/>
+    <circle cx="250" cy="-150" r="15" fill="#fff"/>
+    <circle cx="-200" cy="180" r="18" fill="#fff"/>
+    <circle cx="320" cy="200" r="22" fill="#fff"/>
+    <circle cx="0" cy="-300" r="16" fill="#fff"/>
+  </g>
+  
+  <!-- Central icon -->
+  <g transform="translate(960, 540)">
+    <!-- D20 representation -->
+    <polygon points="0,-80 -76,0 0,80 76,0" fill="#e74c3c" opacity="0.3"/>
+    <polygon points="0,-80 76,0 0,-40" fill="#e74c3c" opacity="0.5"/>
+    <polygon points="0,-80 -76,0 0,-40" fill="#c0392b" opacity="0.5"/>
+    <polygon points="0,80 76,0 0,40" fill="#c0392b" opacity="0.4"/>
+    <polygon points="0,80 -76,0 0,40" fill="#922b21" opacity="0.4"/>
+    
+    <!-- Number 20 -->
+    <text x="0" y="15" text-anchor="middle" font-family="Arial, sans-serif" 
+          font-size="48" font-weight="bold" fill="#fff">20</text>
+  </g>
+  
+  <!-- Title -->
+  <text x="960" y="720" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" 
+        font-size="72" font-weight="bold" fill="#ecf0f1" opacity="0.9">
+    ROAD TO VALHALLA
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="960" y="780" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" 
+        font-size="28" fill="#bdc3c7" opacity="0.7">
+    Uma Jornada Épica Aguarda
+  </text>
+  
+  <!-- Decorative lines -->
+  <line x1="560" y1="650" x2="860" y2="650" stroke="#e74c3c" stroke-width="3" opacity="0.6"/>
+  <line x1="1060" y1="650" x2="1360" y2="650" stroke="#e74c3c" stroke-width="3" opacity="0.6"/>
+</svg>

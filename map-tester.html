@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗺️ Map Tester - BigBridge RPG</title>
+    <link rel="stylesheet" href="/css/map-tester.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🗺️ Testador de Mapas</h1>
+                <p class="subtitle">Upload de assets e teste em tempo real</p>
+            </div>
+            <button class="btn-back" onclick="window.close()">← Voltar ao Admin</button>
+        </header>
+
+        <div class="main-layout">
+            <!-- Sidebar de Upload -->
+            <aside class="sidebar">
+                <div class="sidebar-content">
+                    <!-- Informações do Mapa -->
+                    <section class="section">
+                        <h2>📋 Informações do Mapa</h2>
+                        <div class="form-group">
+                            <label>ID da Mesa</label>
+                            <input type="number" id="tableId" placeholder="Ex: 1, 2, 3..." required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Nome do Mapa</label>
+                            <input type="text" id="mapName" placeholder="Ex: Hospital, Escola..." required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Largura (px)</label>
+                                <input type="number" id="mapWidth" value="1920" min="512" max="8192" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Altura (px)</label>
+                                <input type="number" id="mapHeight" value="1920" min="512" max="8192" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Spawn X</label>
+                                <input type="number" id="spawnX" value="960" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Spawn Y</label>
+                                <input type="number" id="spawnY" value="960" min="0" required>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Upload de Texturas do Mapa -->
+                    <section class="section">
+                        <h2>🌅 Texturas do Mapa</h2>
+                        
+                        <!-- Dia -->
+                        <div class="upload-area" id="upload-dia">
+                            <input type="file" id="file-dia" accept="image/*" hidden>
+                            <label for="file-dia" class="upload-label">
+                                <div class="upload-icon">☀️</div>
+                                <div class="upload-text">
+                                    <strong>Dia</strong>
+                                    <span>Clique ou arraste a imagem</span>
+                                </div>
+                            </label>
+                            <div class="upload-preview" id="preview-dia"></div>
+                        </div>
+
+                        <!-- Tarde -->
+                        <div class="upload-area" id="upload-tarde">
+                            <input type="file" id="file-tarde" accept="image/*" hidden>
+                            <label for="file-tarde" class="upload-label">
+                                <div class="upload-icon">🌆</div>
+                                <div class="upload-text">
+                                    <strong>Tarde</strong>
+                                    <span>Clique ou arraste a imagem</span>
+                                </div>
+                            </label>
+                            <div class="upload-preview" id="preview-tarde"></div>
+                        </div>
+
+                        <!-- Noite -->
+                        <div class="upload-area" id="upload-noite">
+                            <input type="file" id="file-noite" accept="image/*" hidden>
+                            <label for="file-noite" class="upload-label">
+                                <div class="upload-icon">🌙</div>
+                                <div class="upload-text">
+                                    <strong>Noite</strong>
+                                    <span>Clique ou arraste a imagem</span>
+                                </div>
+                            </label>
+                            <div class="upload-preview" id="preview-noite"></div>
+                        </div>
+                    </section>
+
+                    <!-- Upload de Colisões -->
+                    <section class="section">
+                        <h2>🚧 Colisões</h2>
+                        
+                        <!-- Limits -->
+                        <div class="upload-area" id="upload-limits">
+                            <input type="file" id="file-limits" accept="image/*" hidden>
+                            <label for="file-limits" class="upload-label">
+                                <div class="upload-icon">🚧</div>
+                                <div class="upload-text">
+                                    <strong>Colisões (Limits)</strong>
+                                    <span>Áreas bloqueadas</span>
+                                </div>
+                            </label>
+                            <div class="upload-preview" id="preview-limits"></div>
+                        </div>
+                    </section>
+
+                    <!-- Upload de Telhados -->
+                    <section class="section">
+                        <h2>🏠 Telhados por Horário</h2>
+                        
+                        <!-- Rooftops Dia -->
+                        <div class="upload-area" id="upload-rooftops-dia">
+                            <input type="file" id="file-rooftops-dia" accept="image/*" hidden>
+                            <label for="file-rooftops-dia" class="upload-label">
+                                <div class="upload-icon">☀️</div>
+                                <div class="upload-text">
+                                    <strong>Telhados - Dia</strong>
+                                    <span>Camada superior (dia)</span>
+                                </div>
+                            </label>
+                            <div class="upload-preview" id="preview-rooftops-dia"></div>
+                        </div>
+
+                        <!-- Rooftops Tarde -->
+                        <div class="upload-area" id="upload-rooftops-tarde">
+                            <input type="file" id="file-rooftops-tarde" accept="image/*" hidden>
+                            <label for="file-rooftops-tarde" class="upload-label">
+                                <div class="upload-icon">�</div>
+                                <div class="upload-text">
+                                    <strong>Telhados - Tarde</strong>
+                                    <span>Camada superior (tarde)</span>
+                                </div>
+                            </label>
+                            <div class="upload-preview" id="preview-rooftops-tarde"></div>
+                        </div>
+
+                        <!-- Rooftops Noite -->
+                        <div class="upload-area" id="upload-rooftops-noite">
+                            <input type="file" id="file-rooftops-noite" accept="image/*" hidden>
+                            <label for="file-rooftops-noite" class="upload-label">
+                                <div class="upload-icon">🌙</div>
+                                <div class="upload-text">
+                                    <strong>Telhados - Noite</strong>
+                                    <span>Camada superior (noite)</span>
+                                </div>
+                            </label>
+                            <div class="upload-preview" id="preview-rooftops-noite"></div>
+                        </div>
+                    </section>
+
+                    <!-- Controles de Teste -->
+                    <section class="section">
+                        <h2>🎮 Controles de Teste</h2>
+                        <div class="controls">
+                            <button class="btn btn-primary" id="btn-load-test">
+                                🔄 Carregar no Teste
+                            </button>
+                            <button class="btn btn-secondary" id="btn-toggle-limits">
+                                👁️ Mostrar Colisões
+                            </button>
+                            <button class="btn btn-secondary" id="btn-toggle-rooftops">
+                                🏠 Mostrar Telhados
+                            </button>
+                            <button class="btn btn-secondary" onclick="window.location.reload()">
+                                🔄 Reiniciar Tudo
+                            </button>
+                            <div class="time-selector">
+                                <label>Horário do Teste:</label>
+                                <select id="test-time">
+                                    <option value="dia">☀️ Dia</option>
+                                    <option value="tarde">🌆 Tarde</option>
+                                    <option value="noite">🌙 Noite</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Botão de Salvar -->
+                    <section class="section">
+                        <button class="btn btn-success btn-lg" id="btn-save-map">
+                            💾 Salvar Mapa no Banco
+                        </button>
+                        <p class="help-text">
+                            Teste bem o mapa antes de salvar!<br>
+                            Use WASD para mover o boneco de teste.
+                        </p>
+                    </section>
+                </div>
+            </aside>
+
+            <!-- Canvas de Teste Phaser -->
+            <main class="canvas-container">
+                <div class="canvas-header">
+                    <h3>🎮 Preview em Tempo Real</h3>
+                    <div class="canvas-info">
+                        <span id="canvas-fps">FPS: --</span>
+                        <span id="canvas-pos">Pos: (0, 0)</span>
+                    </div>
+                </div>
+                <div id="phaser-game"></div>
+                <div class="canvas-instructions">
+                    <p><strong>Controles:</strong></p>
+                    <p>🎮 WASD - Mover personagem</p>
+                    <p>👁️ Botões laterais - Toggle de camadas</p>
+                    <p>🔄 Botão "Carregar no Teste" - Aplicar uploads</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts - ORDEM IMPORTANTE -->
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- 1. Carregar Phaser 3 do CDN (versão local é Phaser 2) -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    
+    <!-- 2. Verificar se Phaser 3 carregou -->
+    <script>
+        console.log('🔍 Verificando Phaser...');
+        if (typeof Phaser === 'undefined') {
+            console.error('❌ Phaser não carregou do CDN!');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro Crítico',
+                    text: 'Não foi possível carregar Phaser. Verifique sua conexão.',
+                    confirmButtonColor: '#ef4444'
+                });
+            } else {
+                alert('ERRO: Não foi possível carregar Phaser. Verifique sua conexão.');
+            }
+        } else {
+            console.log('✅ Phaser v' + Phaser.VERSION + ' carregado com sucesso!');
+            if (Phaser.VERSION.startsWith('2')) {
+                console.error('❌ ERRO: Versão incorreta! Phaser 2 detectado, mas precisa Phaser 3');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Versão Incorreta',
+                        text: 'Phaser 2 detectado. Recarregando com Phaser 3...',
+                        confirmButtonColor: '#ef4444',
+                        timer: 2000
+                    }).then(() => location.reload());
+                } else {
+                    alert('ERRO: Versão incorreta do Phaser. Usando CDN...');
+                    location.reload();
+                }
+            } else {
+                console.log('✅ Phaser 3 OK - Scene class disponível');
+            }
+        }
+    </script>
+    
+    <!-- 3. Carregar Scene depois que Phaser estiver disponível -->
+    <script src="/js/scenes/sceneMapTester.js"></script>
+    
+    <!-- 4. Carregar lógica principal por último -->
+    <script src="/js/map-tester.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Canvas - RPG</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #C5DDEB;
+            font-family: Arial, sans-serif;
+        }
+        
+        .debug-info {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+        
+        #game {
+            border: 2px solid red;
+            background: yellow;
+            min-height: 400px;
+        }
+        
+        .test-canvas {
+            border: 2px solid green;
+            background: lightblue;
+            width: 400px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Canvas - Road to Valhalla</h1>
+    
+    <div class="debug-info">
+        <h3>Informações de Debug:</h3>
+        <div id="debugOutput"></div>
+    </div>
+    
+    <h3>Container do Jogo (deve ter canvas dentro):</h3>
+    <div id="game"></div>
+    
+    <h3>Canvas de Teste (HTML5):</h3>
+    <canvas class="test-canvas" id="testCanvas"></canvas>
+    
+    <button onclick="testPhaser()">Testar Phaser Básico</button>
+    <button onclick="testCanvas()">Testar Canvas HTML5</button>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.86.0/phaser.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        function updateDebug(message) {
+            const output = document.getElementById('debugOutput');
+            output.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            console.log(message);
+        }
+        
+        function testCanvas() {
+            updateDebug('Testando Canvas HTML5...');
+            const canvas = document.getElementById('testCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = 'red';
+            ctx.fillRect(10, 10, 100, 100);
+            ctx.fillStyle = 'blue';
+            ctx.fillText('Canvas funcionando!', 10, 150);
+            
+            updateDebug('Canvas HTML5: OK');
+        }
+        
+        function testPhaser() {
+            updateDebug('Testando Phaser...');
+            
+            const config = {
+                type: Phaser.AUTO,
+                width: 400,
+                height: 300,
+                parent: 'game',
+                backgroundColor: '#ff0000',
+                scene: {
+                    preload: function() {
+                        updateDebug('Phaser preload executado');
+                    },
+                    create: function() {
+                        updateDebug('Phaser create executado');
+                        this.add.text(10, 10, 'Phaser funcionando!', {
+                            fontSize: '16px',
+                            color: '#ffffff'
+                        });
+                    }
+                }
+            };
+            
+            try {
+                const game = new Phaser.Game(config);
+                updateDebug('Phaser Game criado: ' + (game ? 'Sucesso' : 'Falhou'));
+            } catch (e) {
+                updateDebug('Erro ao criar Phaser Game: ' + e.message);
+            }
+        }
+        
+        // Auto-teste inicial
+        updateDebug('Página carregada');
+        updateDebug('Window dimensions: ' + window.innerWidth + 'x' + window.innerHeight);
+        updateDebug('Phaser disponível: ' + (typeof Phaser !== 'undefined'));
+        updateDebug('jQuery disponível: ' + (typeof $ !== 'undefined'));
+        
+        // Testa canvas automaticamente
+        setTimeout(testCanvas, 1000);
+    </script>
+</body>
+</html>
